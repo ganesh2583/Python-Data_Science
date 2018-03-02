@@ -22,20 +22,24 @@ auth.set_access_token(access_token, access_token_secret)
 api = tweepy.API(auth);
 
 # Search for a tweet
-allTweetsOnModi = api.search(tweetToBeSearched)
+allTweets = api.search(tweetToBeSearched, count=150)
 
-dataForCSV = [["Tweet", "Polarity", "Subjectivity"]]
+dataForCSV = [["Tweet", "Result", "Subjectivity"]]
 
 # Loop through the tweets and get print the tweets
 # and print the sentiment analysis
-for tweetsOnModi in allTweetsOnModi:
-    print(tweetsOnModi.text)
-    analysis = TextBlob(tweetsOnModi.text)
+for tweet in allTweets:
+    print(tweet.text)
+    analysis = TextBlob(tweet.text)
+    analysis.tags
+    if analysis.sentiment.polarity > 0:
+        csvEntry = [tweet.text, "Positive", analysis.sentiment.subjectivity]
+    else:
+        csvEntry = [tweet.text, "Negetive", analysis.sentiment.subjectivity]
     print(analysis.sentiment)
-    csvEntry = [tweetsOnModi.text, analysis.sentiment.polarity, analysis.sentiment.subjectivity]
     dataForCSV.append(csvEntry)
 
-myFile = open('twitterReport.csv', 'w')
+myFile = open('twitterReport.csv', 'w', encoding='utf-8')
 with myFile:
     writer = csv.writer(myFile)
     writer.writerows(dataForCSV)
